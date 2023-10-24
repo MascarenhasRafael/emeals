@@ -8,7 +8,7 @@ class RecipeTest < ActiveSupport::TestCase
   end
 
   def teardown
-    @recipe.destroy
+    Recipe.destroy_all
   end
 
   test 'should be valid with valid attributes' do
