@@ -96,6 +96,9 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.5)
     minitest (5.20.0)
+    minitest-spec-rails (7.2.0)
+      minitest (>= 5.0)
+      railties (>= 4.1)
     msgpack (1.7.2)
     net-imap (0.4.2)
       date
@@ -167,6 +170,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   debug
+  minitest-spec-rails
   puma (~> 5.0)
   rails (~> 7.0.8)
   sqlite3 (~> 1.4)
