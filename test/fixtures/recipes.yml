@@ -1,0 +1,14 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: name
+  image_path: image_path
+  cook_time_in_seconds: 10
+  prep_time_in_seconds: 10
+
+two:
+  name: name
+  image_path: image_path
+  cook_time_in_seconds: 10
+  prep_time_in_seconds: 10
+
