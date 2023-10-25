@@ -23,10 +23,10 @@ class InstructionTest < ActiveSupport::TestCase
     assert @instruction.save
   end
 
-  test 'should require recipe_id' do
-    @instruction.recipe_id = nil
+  test 'should require recipe' do
+    @instruction.recipe = nil
     assert_not @instruction.valid?
-    assert_includes @instruction.errors[:recipe_id], "can't be blank"
+    assert_includes @instruction.errors[:recipe], "can't be blank"
     assert_not @instruction.save
   end
 

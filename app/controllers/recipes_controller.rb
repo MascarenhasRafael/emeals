@@ -50,7 +50,9 @@ class RecipesController < ApplicationController
         :name,
         :image_path,
         :cook_time_in_seconds,
-        :prep_time_in_seconds
+        :prep_time_in_seconds,
+        instructions_attributes: [:id, :content, :_destroy],
+        ingredients_attributes: [:id, :item, :quantity, :measurement_unit, :_destroy]
       )
     end
 end

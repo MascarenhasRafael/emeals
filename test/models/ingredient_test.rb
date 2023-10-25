@@ -23,10 +23,10 @@ class IngredientTest < ActiveSupport::TestCase
     assert @ingredient.save
   end
 
-  test 'should require recipe_id' do
-    @ingredient.recipe_id = nil
+  test 'should require recipe' do
+    @ingredient.recipe = nil
     assert_not @ingredient.valid?
-    assert_includes @ingredient.errors[:recipe_id], "can't be blank"
+    assert_includes @ingredient.errors[:recipe], "can't be blank"
     assert_not @ingredient.save
   end
 
