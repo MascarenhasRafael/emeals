@@ -5,12 +5,12 @@ class RecipesController < ApplicationController
   def index
     @recipes = Recipe.all
 
-    render json: @recipes
+    render json: @recipes, each_serializer: RecipeSerializer
   end
 
   # GET /recipes/1
   def show
-    render json: @recipe
+    render json: @recipe, serializer: RecipeSerializer
   end
 
   # POST /recipes
@@ -18,7 +18,7 @@ class RecipesController < ApplicationController
     @recipe = Recipe.new(recipe_params)
 
     if @recipe.save
-      render json: @recipe, status: :created, location: @recipe
+      render json: @recipe, serializer: RecipeSerializer, status: :created, location: @recipe
     else
       render json: @recipe.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class RecipesController < ApplicationController
   # PATCH/PUT /recipes/1
   def update
     if @recipe.update(recipe_params)
-      render json: @recipe
+      render json: @recipe, serializer: RecipeSerializer
     else
       render json: @recipe.errors, status: :unprocessable_entity
     end

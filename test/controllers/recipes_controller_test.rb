@@ -3,6 +3,10 @@ class RecipesControllerTest < ActionController::TestCase
     @recipe = recipes(:one)
   end
 
+  after do
+    Recipe.destroy_all
+  end
+
   describe 'GET #index' do
     it 'responds successfully' do
       get :index, format: :json
@@ -18,7 +22,14 @@ class RecipesControllerTest < ActionController::TestCase
             name: @recipe.name,
             image_path: @recipe.image_path,
             cook_time_in_seconds: @recipe.cook_time_in_seconds,
-            prep_time_in_seconds: @recipe.prep_time_in_seconds
+            prep_time_in_seconds: @recipe.prep_time_in_seconds,
+            instructions_attributes: [
+              { id: nil, content: 'add milk to a clean pan', _destroy: false }
+            ],
+            ingredients_attributes: [
+                { id: nil, item: 'milk', quantity: 1, measurement_unit: 'liter', _destroy: false },
+                { id: nil, item: 'chocolate', quantity: 2, measurement_unit: 'spoons', _destroy: false }
+            ]
           }
         }, format: :json
       end
@@ -84,7 +95,14 @@ class RecipesControllerTest < ActionController::TestCase
           name: @recipe.name,
           image_path: @recipe.image_path,
           cook_time_in_seconds: @recipe.cook_time_in_seconds,
-          prep_time_in_seconds: @recipe.prep_time_in_seconds
+          prep_time_in_seconds: @recipe.prep_time_in_seconds,
+          instructions_attributes: [
+              { id: nil, content: 'add milk to a clean pan', _destroy: false }
+            ],
+            ingredients_attributes: [
+                { id: nil, item: 'milk', quantity: 1, measurement_unit: 'liter', _destroy: false },
+                { id: nil, item: 'chocolate', quantity: 2, measurement_unit: 'spoons', _destroy: false }
+            ]
         }
       }, format: :json
 
