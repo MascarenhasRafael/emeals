@@ -8,9 +8,33 @@ class RecipesControllerTest < ActionController::TestCase
   end
 
   describe 'GET #index' do
+    before do
+      Recipe.destroy_all
+    end
+
     it 'responds successfully' do
       get :index, format: :json
       assert_response :success
+    end
+
+    it 'orders recipes by name in ascending order' do
+      recipes = create_recipes(3)
+      get :index, params: { ordered_by_name: true }, format: :json
+
+      assert_response :success
+      assert_equal recipes.sort_by(&:name).map(&:id), json_response.map { |recipe| recipe['id'] }
+    end
+
+    it 'orders recipes by date edited in ascending order' do
+      recipes = create_recipes(3)
+      travel_to 1.day.ago do
+        recipes.first.update(name: 'Updated Recipe')
+      end
+
+      get :index, params: { ordered_by_date_edited: true }, format: :json
+
+      assert_response :success
+      assert_equal [recipes.first.id, recipes[1].id, recipes.last.id], json_response.map { |recipe| recipe['id'] }
     end
   end
 
@@ -46,9 +70,8 @@ class RecipesControllerTest < ActionController::TestCase
       }, format: :json
 
       assert_response :unprocessable_entity
-      parsed_body = JSON.parse(response.body)
-      assert_not_nil parsed_body['name']
-      assert_includes parsed_body['name'], "can't be blank"
+      assert_not_nil json_response['name']
+      assert_includes json_response['name'], "can't be blank"
     end
 
     it 'does not create a recipe without cook_time_in_seconds' do
@@ -60,9 +83,8 @@ class RecipesControllerTest < ActionController::TestCase
       }, format: :json
 
       assert_response :unprocessable_entity
-      parsed_body = JSON.parse(response.body)
-      assert_not_nil parsed_body['cook_time_in_seconds']
-      assert_includes parsed_body['cook_time_in_seconds'], "can't be blank"
+      assert_not_nil json_response['cook_time_in_seconds']
+      assert_includes json_response['cook_time_in_seconds'], "can't be blank"
     end
 
     it 'does not create a recipe without prep_time_in_seconds' do
@@ -74,9 +96,8 @@ class RecipesControllerTest < ActionController::TestCase
       }, format: :json
 
       assert_response :unprocessable_entity
-      parsed_body = JSON.parse(response.body)
-      assert_not_nil parsed_body['prep_time_in_seconds']
-      assert_includes parsed_body['prep_time_in_seconds'], "can't be blank"
+      assert_not_nil json_response['prep_time_in_seconds']
+      assert_includes json_response['prep_time_in_seconds'], "can't be blank"
     end
 
     it 'does not create instructions marked for destruction' do
@@ -94,8 +115,7 @@ class RecipesControllerTest < ActionController::TestCase
       end
   
       assert_response :success
-      parsed_body = JSON.parse(response.body)
-      assert_not parsed_body['instructions'].any?, 'Instruction should not even be created'
+      assert_not json_response['instructions'].any?, 'Instruction should not even be created'
     end
   
     it 'does not create ingredients marked for destruction' do
@@ -113,8 +133,7 @@ class RecipesControllerTest < ActionController::TestCase
       end
   
       assert_response :success
-      parsed_body = JSON.parse(response.body)
-      assert_not parsed_body['ingredients'].any?, 'Ingredient should not even be created'
+      assert_not json_response['ingredients'].any?, 'Ingredient should not even be created'
     end
   end
 
@@ -170,9 +189,8 @@ class RecipesControllerTest < ActionController::TestCase
       }, format: :json
 
       assert_response :unprocessable_entity
-      parsed_body = JSON.parse(response.body)
-      assert_not_nil parsed_body['name']
-      assert_includes parsed_body['name'], "can't be blank"
+      assert_not_nil json_response['name']
+      assert_includes json_response['name'], "can't be blank"
     end
 
     it 'does not update a recipe without cook_time_in_seconds' do
@@ -187,9 +205,8 @@ class RecipesControllerTest < ActionController::TestCase
       }, format: :json
 
       assert_response :unprocessable_entity
-      parsed_body = JSON.parse(response.body)
-      assert_not_nil parsed_body['cook_time_in_seconds']
-      assert_includes parsed_body['cook_time_in_seconds'], "can't be blank"
+      assert_not_nil json_response['cook_time_in_seconds']
+      assert_includes json_response['cook_time_in_seconds'], "can't be blank"
     end
 
     it 'does not update a recipe without prep_time_in_seconds' do
@@ -204,9 +221,8 @@ class RecipesControllerTest < ActionController::TestCase
       }, format: :json
 
       assert_response :unprocessable_entity
-      parsed_body = JSON.parse(response.body)
-      assert_not_nil parsed_body['prep_time_in_seconds']
-      assert_includes parsed_body['prep_time_in_seconds'], "can't be blank"
+      assert_not_nil json_response['prep_time_in_seconds']
+      assert_includes json_response['prep_time_in_seconds'], "can't be blank"
     end
 
     it 'removes instructions marked for destruction' do
@@ -252,5 +268,21 @@ class RecipesControllerTest < ActionController::TestCase
 
       assert_response :no_content
     end
+  end
+
+  def create_recipes(count)
+    recipes = []
+    count.times do |i|
+      recipes << Recipe.create(
+        name: "Recipe #{i + 1}",
+        cook_time_in_seconds: 180,
+        prep_time_in_seconds: 60
+      )
+    end
+    recipes
+  end
+
+  def json_response
+    JSON.parse(response.body)
   end
 end
