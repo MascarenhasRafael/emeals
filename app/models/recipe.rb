@@ -12,4 +12,7 @@ class Recipe < ApplicationRecord
     numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   validates_associated :instructions, :ingredients
+
+  scope :ordered_by_name, -> { order(name: :asc) }
+  scope :ordered_by_date_edited, -> { order(updated_at: :asc) }
 end

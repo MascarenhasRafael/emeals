@@ -1,9 +1,12 @@
 class RecipesController < ApplicationController
   before_action :set_recipe, only: %i[ show json_ld update destroy ]
 
+  has_scope :ordered_by_name, type: :boolean, default: false
+  has_scope :ordered_by_date_edited, type: :boolean, default: false
+
   # GET /recipes
   def index
-    @recipes = Recipe.all
+    @recipes = apply_scopes(Recipe).all
 
     render json: @recipes, each_serializer: RecipeSerializer
   end
