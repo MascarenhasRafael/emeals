@@ -125,6 +125,17 @@ class RecipesControllerTest < ActionController::TestCase
     end
   end
 
+  describe 'GET #json_ld' do
+    it 'returns the JSON-LD file as an attachment' do
+      get :json_ld, params: { id: @recipe }, format: :json
+
+      assert_response :success
+      assert_equal 'application/json', response.content_type
+      expected_content_disposition = "attachment; filename=\"recipe_#{@recipe.id}_json_ld.json\"; filename*=UTF-8''recipe_#{@recipe.id}_json_ld.json"
+      assert_equal expected_content_disposition, response.headers['Content-Disposition']
+    end
+  end
+
   describe 'PATCH #update' do
     it 'updates a recipe successfully' do
       patch :update, params: {
