@@ -144,7 +144,7 @@ class RecipesControllerTest < ActionController::TestCase
     end
   end
 
-  describe 'GET #json_ld' do
+  describe 'GET /recipes/:id/json_ld' do
     it 'returns the JSON-LD file as an attachment' do
       get :json_ld, params: { id: @recipe }, format: :json
 

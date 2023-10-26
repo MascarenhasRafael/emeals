@@ -1,0 +1,205 @@
+swagger: "2.0"
+info:
+  title: "Recipes API"
+  version: "1.0"
+paths:
+  /recipes:
+    get:
+      summary: "List recipes"
+      description: "List all recipes"
+      operationId: "listRecipes"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "ordered_by_name"
+          in: "query"
+          description: "Order recipes by name ascending"
+          required: false
+          type: "boolean"
+        - name: "ordered_by_date_edited"
+          in: "query"
+          description: "Order recipes by last update date ascending"
+          required: false
+          type: "boolean"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Recipe"
+    post:
+      summary: "Create a recipe"
+      operationId: "createRecipe"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "recipe"
+          description: "Recipe object"
+          required: true
+          schema:
+            $ref: "#/definitions/RecipeInput"
+      responses:
+        "201":
+          description: "Recipe created successfully"
+        "422":
+          description: "Unprocessable Entity"
+          schema:
+            $ref: "#/definitions/ValidationError"
+  /recipes/{id}:
+    get:
+      summary: "Get a recipe by ID"
+      operationId: "getRecipeById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the recipe to retrieve"
+          required: true
+          type: "integer"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Recipe"
+    patch:
+      summary: "Update a recipe by ID"
+      operationId: "updateRecipeById"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the recipe to update"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "recipe"
+          description: "Recipe object"
+          required: true
+          schema:
+            $ref: "#/definitions/RecipeInput"
+      responses:
+        "200":
+          description: "Recipe updated successfully"
+        "422":
+          description: "Unprocessable Entity"
+          schema:
+            $ref: "#/definitions/ValidationError"
+    delete:
+      summary: "Delete a recipe by ID"
+      operationId: "deleteRecipeById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the recipe to delete"
+          required: true
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+  /recipes/{id}/json_ld:
+    get:
+      summary: "Get JSON-LD file for a recipe by ID"
+      operationId: "getRecipeJsonLdById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the recipe to retrieve JSON-LD file"
+          required: true
+          type: "integer"
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            type: "object" # Adjust this based on the actual JSON-LD structure
+definitions:
+  Recipe:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      image_path:
+        type: "string"
+      cook_time_in_seconds:
+        type: "integer"
+      prep_time_in_seconds:
+        type: "integer"
+      instructions:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+            content:
+              type: "string"
+      ingredients:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+            item:
+              type: "string"
+            quantity:
+              type: "integer"
+            measurement_unit:
+              type: "string"
+  RecipeInput:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      image_path:
+        type: "string"
+      cook_time_in_seconds:
+        type: "integer"
+      prep_time_in_seconds:
+        type: "integer"
+      instructions_attributes:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+            content:
+              type: "string"
+            _destroy:
+              type: "boolean"
+      ingredients_attributes:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+            item:
+              type: "string"
+            quantity:
+              type: "integer"
+            measurement_unit:
+              type: "string"
+            _destroy:
+              type: "boolean"
+  ValidationError:
+    type: "object"
+    properties:
+      name:
+        type: "array"
+        items:
+          type: "string"
