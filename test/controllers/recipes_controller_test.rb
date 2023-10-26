@@ -78,6 +78,44 @@ class RecipesControllerTest < ActionController::TestCase
       assert_not_nil parsed_body['prep_time_in_seconds']
       assert_includes parsed_body['prep_time_in_seconds'], "can't be blank"
     end
+
+    it 'does not create instructions marked for destruction' do
+      assert_no_difference(['Instruction.count']) do
+        post :create, params: {
+          recipe: {
+            name: @recipe.name,
+            cook_time_in_seconds: @recipe.cook_time_in_seconds,
+            prep_time_in_seconds: @recipe.prep_time_in_seconds,
+            instructions_attributes: [
+              { content: 'Test Instruction', _destroy: true }
+            ]
+          }
+        }, format: :json
+      end
+  
+      assert_response :success
+      parsed_body = JSON.parse(response.body)
+      assert_not parsed_body['instructions'].any?, 'Instruction should not even be created'
+    end
+  
+    it 'does not create ingredients marked for destruction' do
+      assert_no_difference(['Ingredient.count']) do
+        post :create, params: {
+          recipe: {
+            name: @recipe.name,
+            cook_time_in_seconds: @recipe.cook_time_in_seconds,
+            prep_time_in_seconds: @recipe.prep_time_in_seconds,
+            ingredients_attributes: [
+              { item: 'Test Ingredient', quantity: 1, measurement_unit: 'cup', _destroy: true }
+            ]
+          }
+        }, format: :json
+      end
+  
+      assert_response :success
+      parsed_body = JSON.parse(response.body)
+      assert_not parsed_body['ingredients'].any?, 'Ingredient should not even be created'
+    end
   end
 
   describe 'GET #show' do
@@ -158,6 +196,40 @@ class RecipesControllerTest < ActionController::TestCase
       parsed_body = JSON.parse(response.body)
       assert_not_nil parsed_body['prep_time_in_seconds']
       assert_includes parsed_body['prep_time_in_seconds'], "can't be blank"
+    end
+
+    it 'removes instructions marked for destruction' do
+      instruction = @recipe.instructions.create(content: 'Test Instruction')
+      assert @recipe.instructions.exists?(instruction.id)
+  
+      patch :update, params: {
+        id: @recipe,
+        recipe: {
+          instructions_attributes: [
+            { id: instruction.id, _destroy: true }
+          ]
+        }
+      }, format: :json
+  
+      assert_response :success
+      assert_not @recipe.instructions.exists?(instruction.id), 'Instruction should be removed'
+    end
+  
+    it 'removes ingredients marked for destruction' do
+      ingredient = @recipe.ingredients.create(item: 'Test Ingredient', quantity: 1, measurement_unit: 'cup')
+      assert @recipe.ingredients.exists?(ingredient.id)
+  
+      patch :update, params: {
+        id: @recipe,
+        recipe: {
+          ingredients_attributes: [
+            { id: ingredient.id, _destroy: true }
+          ]
+        }
+      }, format: :json
+  
+      assert_response :success
+      assert_not @recipe.ingredients.exists?(ingredient.id), 'Ingredient should be removed'
     end
   end
 
