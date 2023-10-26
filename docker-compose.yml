@@ -1,0 +1,27 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    stdin_open: true
+    tty: true
+    command: bash -c "bundle exec rails s -p 3000 -b '0.0.0.0'"
+    environment:
+      DATABASE_URL: "postgresql://emeals:emeals@db:5432/emeals_development"
+    volumes:
+      - .:/myapp
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
