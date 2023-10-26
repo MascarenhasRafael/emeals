@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-  before_action :set_recipe, only: %i[ show update destroy ]
+  before_action :set_recipe, only: %i[ show json_ld update destroy ]
 
   # GET /recipes
   def index
@@ -11,6 +11,18 @@ class RecipesController < ApplicationController
   # GET /recipes/1
   def show
     render json: @recipe, serializer: RecipeSerializer
+  end
+
+  # GET /recipes/1/json_ld
+  def json_ld
+    json_ld_data = JsonLd::RecipeSerializer.new(@recipe).to_json
+
+    send_data(
+      json_ld_data,
+      filename: "recipe_#{@recipe.id}_json_ld.json",
+      type: 'application/json',
+      disposition: 'attachment'
+    )
   end
 
   # POST /recipes
