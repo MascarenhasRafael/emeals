@@ -25,7 +25,7 @@ class RecipesControllerTest < ActionController::TestCase
       assert_equal recipes.sort_by(&:name).map(&:id), json_response.map { |recipe| recipe['id'] }
     end
 
-    it 'orders recipes by date edited in ascending order' do
+    it 'orders recipes by date edited in descending order' do
       recipes = create_recipes(3)
       travel_to 1.day.ago do
         recipes.first.update(name: 'Updated Recipe')
@@ -34,7 +34,7 @@ class RecipesControllerTest < ActionController::TestCase
       get :index, params: { ordered_by_date_edited: true }, format: :json
 
       assert_response :success
-      assert_equal [recipes.first.id, recipes[1].id, recipes.last.id], json_response.map { |recipe| recipe['id'] }
+      assert_equal [recipes.last.id, recipes[1].id, recipes.first.id], json_response.map { |recipe| recipe['id'] }
     end
   end
 
@@ -150,7 +150,7 @@ class RecipesControllerTest < ActionController::TestCase
 
       assert_response :success
       assert_equal 'application/json', response.content_type
-      expected_content_disposition = "attachment; filename=\"recipe_#{@recipe.id}_json_ld.json\"; filename*=UTF-8''recipe_#{@recipe.id}_json_ld.json"
+      expected_content_disposition = "attachment; filename=\"recipe_#{@recipe.id}.json\"; filename*=UTF-8''recipe_#{@recipe.id}.json"
       assert_equal expected_content_disposition, response.headers['Content-Disposition']
     end
   end

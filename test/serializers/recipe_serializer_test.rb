@@ -32,10 +32,10 @@ class RecipeSerializerTest < ActiveSupport::TestCase
       prep_time_in_seconds: 60
     )
 
-    assert_equal_instructions([{ id: 1, content: 'add milk to a clean pan' }])
+    assert_equal_instructions([{ id: @recipe.instructions.first.id, content: 'add milk to a clean pan' }])
     assert_equal_ingredients([
-      { id: 1, item: 'milk', quantity: 1.0, measurement_unit: 'liter' },
-      { id: 2, item: 'chocolate', quantity: 2.0, measurement_unit: 'spoons' }
+      { id: @recipe.ingredients.first.id, item: 'milk', quantity: 1.0, measurement_unit: 'liter' },
+      { id: @recipe.ingredients.last.id, item: 'chocolate', quantity: 2.0, measurement_unit: 'spoons' }
     ])
   end
 
