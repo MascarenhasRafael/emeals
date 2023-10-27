@@ -8,7 +8,7 @@ class RecipesController < ApplicationController
   def index
     @recipes = apply_scopes(Recipe).all
 
-    render json: @recipes, each_serializer: RecipeSerializer
+    render json: @recipes, each_serializer: RecipeOverviewSerializer
   end
 
   # GET /recipes/1
@@ -22,7 +22,7 @@ class RecipesController < ApplicationController
 
     send_data(
       json_ld_data,
-      filename: "recipe_#{@recipe.id}_json_ld.json",
+      filename: "recipe_#{@recipe.id}.json",
       type: 'application/json',
       disposition: 'attachment'
     )

@@ -14,5 +14,5 @@ class Recipe < ApplicationRecord
   validates_associated :instructions, :ingredients
 
   scope :ordered_by_name, -> { order(name: :asc) }
-  scope :ordered_by_date_edited, -> { order(updated_at: :asc) }
+  scope :ordered_by_date_edited, -> { order(updated_at: :desc) }
 end
